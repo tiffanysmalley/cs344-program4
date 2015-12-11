@@ -101,18 +101,69 @@ int main(int argc, char** argv)
         printf("Error: key '%s' is too short\n", argv[2]);
     }
 
+    // create socket 
+    int sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    if (sockfd == -1)
+    {
+        printf("Error: could not contact otp_enc_d on port %d\n", port);
+        exit(2);
+    }
+
     // connect to otp_enc_d
+    if (connect(sockfd, (stuct sockaddr *) &server, sizeof(server)) == -1)
+    {
+        printf("Error: could not connect to otp_enc_d on port %d\n", port);
+        exit(2);
+    }
+
+    struct sockaddr_in server;
+
+    server.sin_family = AF_INET;
+    server.sin_port = htons(port);
+    server.sin_addr.s_addr = inet_addr("192.168.1.1");
+
 
     // make sure not otp_dec_d though
 
     // send plaintext to otp_enc_d
+    ssize_t numSent = send(sockfd, buffer1, plaintextLength - 1, 0);
+    if (numSent < plaintextLength)
+    {
+        printf("Error: could not send plaintext to otp_enc_d on port %d\n", port);
+        exit(2);
+    }
 
-    // receive ciphertext from otp_enc_d
+    // send key to otp_enc_d
+    numSent = send(sockfd, buffer2, keyLength - 1, 0);
+    if (numSent < keyLength)
+    {
+        printf("Error: could not send key to otp_enc_d on port %d\n", port);
+        exit(2);
+    }
+
+    ssize_t numReceived;
+
+    do
+    {
+        // receive ciphertext from otp_enc_d
+        numReceived = recv(sockfd, buffer1, BUFFER_SIZE, 0);
+    }
+    while (numReceived > 0);
+
+    if (numReceived < plaintextLength)
+    {
+       printf("Error: did not receive full ciphertext from otp_enc_d\n", port);
+       exit(2);
+    }
 
     // output ciphertext to stdout
+    for (i = 0; i < plaintextLength; i++)
+    {
+        printf("%c", buffer1[i]);
+    }
 
-    // add newline to ciphertext
-//    printf("\n");
+    // add newline to ciphertext ouput
+    printf("\n");
 
     return 0;
 }
