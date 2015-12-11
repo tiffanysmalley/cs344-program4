@@ -11,6 +11,7 @@
  ******************************************************************************/
 
 #include <fcntl.h>     // for open
+#include <sys/socket.h>
 #include <stdio.h>     // for printf
 #include <stdlib.h>    // for exit
 #include <sys/stat.h> 
