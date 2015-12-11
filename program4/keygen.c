@@ -4,10 +4,10 @@
  ** Date:        12/7/15
  **
  ** Description: This program accepts a whole number from the command line and
- **              outputs that number of random characters that are either 
- **              capital letters or spaces. 
+ **              outputs that number of random characters that are either
+ **              capital letters or spaces.
  **
- ** Input:       from stdin: 	type char*
+ ** Input:       from stdin:    type char*
  **             
  ** Output:      to stdout:     type char
  ******************************************************************************/
@@ -21,8 +21,8 @@
 
 /*****************************************************************************
  ** Function:         randInt()
- ** Description:      This function generates and returns a psuedo-random number
- **                   in range from min to max, inclusive.
+ ** Description:      This function generates and returns a psuedo-random
+ **                   number in range from min to max, inclusive.
  ** Parameters:       two int values: min, max
  ** Pre-Conditions:   min and max are integer values
  ** Post-Conditions:  returns the random number
