@@ -33,11 +33,13 @@ int main(int argc, char** argv)
     int newsockfd;
     int i;
     int keyLength;
+    // int numRead;
     int plaintextLength;
     int port;
+    socklen_t clilen;
 
-    struct sockaddr_in serv_addr;
-    struct sockaddr_in cli_addr;
+    struct sockaddr_in server;
+    struct sockaddr_in client;
 
     // make sure there are enough args
     if (argc < 2)
@@ -65,18 +67,18 @@ int main(int argc, char** argv)
 //    bzero((char *) &serv_addr, sizeof(serv_addr));
     memset(&server_addr, '\0', sizeof(serv_addr))
 
+
+    // set up an address
+    server.sin_family = AF_INET;
+    server.sin_addr.s_addr = INADDR_ANY;
+    server.sin_port = htons(port);
+
     // bind socket to a port
-    if (bind(sockfd, (stuct sockaddr *) &server, sizeof(SERVER)) == -1)
+    if (bind(sockfd, (stuct sockaddr *) &server, sizeof(SERVER)) < 0)
     {
         printf("Error: opt_enc_d unable to bind socket to port %d\n", port);
         exit(2);
     }
-
-    // set up an address
-    struct sockaddr_in server;
-    server.sin_family = AF_INET;
-    server.sin_port = htons(port);
-    server.sin_addr.s_addr = INADDR_ANY;
 
     // listen for connections
     if (listen(sockfd, 5) == -1)
@@ -85,62 +87,74 @@ int main(int argc, char** argv)
         exit(2);
     }
 
+    clilen = sizeof(client);
+
     // accept connections
-    while (1) {
-        if ((client_sockfd = accept(sockfd, NULL, NULL)) == -1)
+    while (1)
+    {
+//        if ((newsockfd = accept(sockfd, NULL, NULL)) == -1)
+        newsockfd = accept(sockfd, (struct sockaddr *) &client, &clilen);
+        if (newsockfd < 0)
         {
             printf("Error: opt_enc_d unable to accept connection\n");
             continue;
         }
     }
 
+    // bzero(buffer,256);
+
     // every time a client connects, spawn off that process
     // grab code from smallsh
 
-    // make sure not otp_dec_d though
+    // make sure not otp_dec_d though!!!
 
     // receive plaintext from otp_enc
-    // ssize_t numSent = send(sockfd, buffer1, plaintextLength - 1, 0);
-    // if (numSent < plaintextLength)
-    // {
-    //     printf("Error: could not send plaintext to otp_enc_d on port %d\n", port);
-    //     exit(2);
-    // }
+    // ssize_t numRead = send(sockfd, buffer1, plaintextLength - 1, 0);
+    plaintextLength = read(newsockfd, buffer1, BUFFER_SIZE);
+    if (plaintextLength < 0)
+    {
+        printf("Error: otp_end_d could not read plaintext on port %d\n", port);
+        exit(2);
+    }
 
     // receive key from otp_enc
     // numSent = send(sockfd, buffer2, keyLength - 1, 0);
-    // if (numSent < keyLength)
-    // {
-    //     printf("Error: could not send key to otp_enc_d on port %d\n", port);
-    //     exit(2);
-    // }
+    keyLength = read(newsockfd, buffer2, BUFFER_SIZE);
+    if (keyLength < 0)
+    {
+        printf("Error: otp_end_d could not read key on port %d\n", port);
+        exit(2);
+    }
 
     // ssize_t numReceived;
 
 
     // validate contents of plaintext
-    // for (i = 0; i < plaintextLength; i++)
-    // {
-    //     if ((int) buffer1[i] > 90 || ((int) buffer1[i] < 65 && (int) buffer1[i] != 32))
-    //     {
-    //         printf("otp_enc_d error: plaintext contains bad characters\n");
-    //     }
-    // }
+    for (i = 0; i < plaintextLength; i++)
+    {
+        if ((int) buffer1[i] > 90 || ((int) buffer1[i] < 65 && (int) buffer1[i] != 32))
+        {
+            printf("otp_enc_d error: plaintext contains bad characters\n");
+            exit(1);
+        }
+    }
 
     // // validate contents of key
-    // for (i = 0; i < keyLength; i++)
-    // {
-    //     if ((int) buffer2[i] > 90 || ((int) buffer2[i] < 65 && (int) buffer2[i] != 32))
-    //     {
-    //         printf("otp_enc_d error: key contains bad characters\n");
-    //     }
-    // }
+    for (i = 0; i < keyLength; i++)
+    {
+        if ((int) buffer2[i] > 90 || ((int) buffer2[i] < 65 && (int) buffer2[i] != 32))
+        {
+            printf("otp_enc_d error: key contains bad characters\n");
+            exit(1);
+        }
+    }
 
-    // // compare length of plaintext to that of key
-    // if (keyLength < plaintextLength)
-    // {
-    //     printf("Error: key '%s' is too short\n", argv[2]);
-    // }
+    // compare length of plaintext to that of key
+    if (keyLength < plaintextLength)
+    {
+        printf("otp_enc_d error: key is too short\n");
+        exit(1);
+    }
 
     // processing: create ciphertext
     for (i = 0; i < plaintextLength; i++)
@@ -179,16 +193,17 @@ int main(int argc, char** argv)
         }
     }
 
-
     // send ciphertext to otp_enc
-    // numSent = send(sockfd, buffer2, keyLength - 1, 0);
-    // if (numSent < plainTextLength)
-    // {
-    //     printf("Error: could not send full ciphertext to otp_enc\n");
-    //     exit(2);
-    // }
+    numSent = write(newsockfd, buffer3, plaintextLength);
+    if (numSent < plaintextLength)
+    {
+        printf("otp_enc_d error writing to socket\n");
+        exit(2);
+    }
 
-
+    // close sockets
+    close(newsockfd);
+    close(sockfd);
 
 
     // do
