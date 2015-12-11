@@ -3,7 +3,7 @@
  ** Author:      Scott Milton
  ** Date:        12/7/15
  **
- ** Description: This program accepts a whole number
+ ** Description: This program 
  **
  ** Input:       from the keyboard: type char[]
  **              from files:        type char[]
@@ -13,13 +13,14 @@
 
 
 #include <stdio.h>     // for printf
-#include <stdlib.h>    // for exit, rand, srand
+#include <stdlib.h>    // for rand and srand
 #include <time.h>      // for time
 
 // #include <errno.h>     // for errno
 // #include <fcntl.h>     // for open
 // #include <limits.h>    // for INT_MAX
 // #include <signal.h>    // for sigset_t
+// #include <stdlib.h>    // for getenv, malloc, free
 // #include <string.h>    // for strcpy, strcat
 // #include <sys/stat.h>  // for stat 
 // #include <sys/types.h> // for pid_t
@@ -54,36 +55,28 @@ int main(int argc, char** argv)
 
     char randLetter;
     int i;
-    int length;
+    int length = 5;
     time_t sysClock;
 
-    // validate format
+    // validate format ???
 //    printf("Usage: keygen keyLength\n");
 
     // i.e. - make sure there are enough args
-    if (argc < 1)
-    {
-        printf("Usage: keygen keyLength\n");
-        exit(1);
-    }
 
     // i.e. - make sure arg1 is digits
-
-    // get length of key to generate from arg #1
-    length = argv[1];
-
-    if (length < 1)
-    {
-        printf("keygen: invalid keyLength\n");
-        exit(1);
-    }
 
     // seed the rand() function with system clock
     srand((unsigned) time(&sysClock));
 
+    // get length of key to generate from arg #1
+
+    // allocate memory for string of that length
+    char *randString = (char *) malloc((length + 1) * sizeof(char));
+
     // loop length number of times
     for (i = 0; i < length; i++)
     {
+
         // generate a random letter
         randLetter = (char) randInt(64, 90);
 
@@ -93,12 +86,22 @@ int main(int argc, char** argv)
            randLetter = ' ';
         }
 
-        printf("%c", randLetter);
+        // add it to the string
+        randString[i] = randLetter;
+
     }
 
-    printf("\n");
+    // add null terminator to end of string for output
+    randString[i] = '\0';
+
+    // output the string to stdout
+    printf("The random string is: %s\n", randString);
+
+    // free the dynamic memory
+    free(randString);
 
     return 0;
+
 }
 
 
