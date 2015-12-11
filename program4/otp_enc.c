@@ -11,9 +11,10 @@
  ******************************************************************************/
 
 #include <fcntl.h>     // for open
-#include <sys/socket.h>
+#include <netinet/in.h>
 #include <stdio.h>     // for printf
 #include <stdlib.h>    // for exit
+#include <sys/socket.h>
 #include <sys/stat.h> 
 #include <unistd.h>
 
@@ -30,6 +31,8 @@ int main(int argc, char** argv)
     int keyLength;
     int plaintextLength;
     int port;
+
+    struct sockaddr_in server;
 
     // make sure there are enough args
     if (argc < 4)
@@ -111,13 +114,13 @@ int main(int argc, char** argv)
     }
 
     // connect to otp_enc_d
-    if (connect(sockfd, (stuct sockaddr *) &server, sizeof(server)) == -1)
+    if (connect(sockfd, (struct sockaddr *) &server, sizeof(server)) == -1)
     {
         printf("Error: could not connect to otp_enc_d on port %d\n", port);
         exit(2);
     }
 
-    struct sockaddr_in server;
+//    struct sockaddr_in server;
 
     server.sin_family = AF_INET;
     server.sin_port = htons(port);

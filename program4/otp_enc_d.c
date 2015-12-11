@@ -12,7 +12,7 @@
  ******************************************************************************/
 
 #include <fcntl.h>     // for open
-//#include <netinet/in.h>
+#include <netinet/in.h>
 #include <stdio.h>     // for printf
 #include <stdlib.h>    // for exit
 #include <string.h>
@@ -33,7 +33,7 @@ int main(int argc, char** argv)
     int newsockfd;
     int i;
     int keyLength;
-    // int numRead;
+    int numSent;
     int plaintextLength;
     int port;
     socklen_t clilen;
@@ -65,7 +65,7 @@ int main(int argc, char** argv)
 
     // zero out the IP address memory space
 //    bzero((char *) &serv_addr, sizeof(serv_addr));
-    memset(&server_addr, '\0', sizeof(serv_addr))
+    memset(&server, '\0', sizeof(server));
 
 
     // set up an address
@@ -74,7 +74,7 @@ int main(int argc, char** argv)
     server.sin_port = htons(port);
 
     // bind socket to a port
-    if (bind(sockfd, (stuct sockaddr *) &server, sizeof(SERVER)) < 0)
+    if (bind(sockfd, (struct sockaddr *) &server, sizeof(server)) < 0)
     {
         printf("Error: opt_enc_d unable to bind socket to port %d\n", port);
         exit(2);
@@ -178,7 +178,7 @@ int main(int argc, char** argv)
         key = key - 64;
 
         // combine key and message using modular addition
-        int cipher = (message + key) % 27;
+        int cipher = (msg + key) % 27;
 
         // add 64 back to that range is 64 - 90
         cipher = cipher + 64;
