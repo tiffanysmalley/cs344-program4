@@ -3,36 +3,19 @@
  ** Author:      Scott Milton
  ** Date:        12/7/15
  **
- ** Description: This program accepts a whole number
+ ** Description: This program accepts a whole number from the command line and
+ **              outputs that number of random characters that are either 
+ **              capital letters or spaces. 
  **
- ** Input:       from the keyboard: type char[]
- **              from files:        type char[]
- **
- ** Output:      to the console and files : type char[], char*, const char*, int
+ ** Input:       from stdin: 	type char*
+ **             
+ ** Output:      to stdout:     type char
  ******************************************************************************/
 
 
 #include <stdio.h>     // for printf
 #include <stdlib.h>    // for exit, rand, srand
 #include <time.h>      // for time
-
-// #include <errno.h>     // for errno
-// #include <fcntl.h>     // for open
-// #include <limits.h>    // for INT_MAX
-// #include <signal.h>    // for sigset_t
-// #include <string.h>    // for strcpy, strcat
-// #include <sys/stat.h>  // for stat 
-// #include <sys/types.h> // for pid_t
-// #include <sys/wait.h>  // for waitpid
-// #include <unistd.h>    // for exec
-
-// #define DEBUG             0 // change to 1 for debugging print statements 
-// #define MAX_ARGS        512 // maximum arguments accepted on command line
-// #define MAX_LENGTH     2048 // maximum length for a command line
-// #define MAX_PIDS       1000 // maximum PIDs to track
-
-// define bool as type
-//typedef enum { false, true } bool;
 
 
 
@@ -57,20 +40,15 @@ int main(int argc, char** argv)
     int length;
     time_t sysClock;
 
-    // validate format
-//    printf("Usage: keygen keyLength\n");
-
     // i.e. - make sure there are enough args
-    if (argc < 1)
+    if (argc < 2)
     {
         printf("Usage: keygen keyLength\n");
         exit(1);
     }
 
-    // i.e. - make sure arg1 is digits
-
     // get length of key to generate from arg #1
-    length = argv[1];
+    sscanf(argv[1], "%d", &length);
 
     if (length < 1)
     {
