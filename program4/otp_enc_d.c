@@ -12,10 +12,12 @@
  ******************************************************************************/
 
 #include <fcntl.h>     // for open
-#include <sys/socket.h>
+//#include <netinet/in.h>
 #include <stdio.h>     // for printf
 #include <stdlib.h>    // for exit
-#include <sys/stat.h> 
+#include <string.h>
+#include <sys/socket.h>
+#include <sys/stat.h>
 #include <unistd.h>
 
 #define BUFFER_SIZE    128000
@@ -27,11 +29,15 @@ int main(int argc, char** argv)
     char buffer1[BUFFER_SIZE];
     char buffer2[BUFFER_SIZE];
     char buffer3[BUFFER_SIZE];
-//    int fd;
+    int sockfd;
+    int newsockfd;
     int i;
     int keyLength;
     int plaintextLength;
     int port;
+
+    struct sockaddr_in serv_addr;
+    struct sockaddr_in cli_addr;
 
     // make sure there are enough args
     if (argc < 2)
@@ -48,27 +54,48 @@ int main(int argc, char** argv)
         exit(2);
     }
 
-    // // create socket 
-    // int sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    // if (sockfd == -1)
-    // {
-    //     printf("Error: could not contact otp_enc_d on port %d\n", port);
-    //     exit(2);
-    // }
+    // create socket
+    if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+    {
+        printf("Error: opt_enc_d could not create socket\n");
+        exit(1);
+    }
 
-    // // connect to otp_enc
-    // if (connect(sockfd, (stuct sockaddr *) &server, sizeof(server)) == -1)
-    // {
-    //     printf("Error: could not connect to otp_enc_d on port %d\n", port);
-    //     exit(2);
-    // }
+    // zero out the IP address memory space
+//    bzero((char *) &serv_addr, sizeof(serv_addr));
+    memset(&server_addr, '\0', sizeof(serv_addr))
 
-    // struct sockaddr_in server;
+    // bind socket to a port
+    if (bind(sockfd, (stuct sockaddr *) &server, sizeof(SERVER)) == -1)
+    {
+        printf("Error: opt_enc_d unable to bind socket to port %d\n", port);
+        exit(2);
+    }
 
-    // server.sin_family = AF_INET;
-    // server.sin_port = htons(port);
-    // server.sin_addr.s_addr = inet_addr("192.168.1.1");
+    // set up an address
+    struct sockaddr_in server;
+    server.sin_family = AF_INET;
+    server.sin_port = htons(port);
+    server.sin_addr.s_addr = INADDR_ANY;
 
+    // listen for connections
+    if (listen(sockfd, 5) == -1)
+    {
+        printf("Error: opt_enc_d unable to listen on port %d\n", port);
+        exit(2);
+    }
+
+    // accept connections
+    while (1) {
+        if ((client_sockfd = accept(sockfd, NULL, NULL)) == -1)
+        {
+            printf("Error: opt_enc_d unable to accept connection\n");
+            continue;
+        }
+    }
+
+    // every time a client connects, spawn off that process
+    // grab code from smallsh
 
     // make sure not otp_dec_d though
 
@@ -89,7 +116,6 @@ int main(int argc, char** argv)
     // }
 
     // ssize_t numReceived;
-
 
 
     // validate contents of plaintext
@@ -152,6 +178,16 @@ int main(int argc, char** argv)
             buffer3[i] = ' ';
         }
     }
+
+
+    // send ciphertext to otp_enc
+    // numSent = send(sockfd, buffer2, keyLength - 1, 0);
+    // if (numSent < plainTextLength)
+    // {
+    //     printf("Error: could not send full ciphertext to otp_enc\n");
+    //     exit(2);
+    // }
+
 
 
 
