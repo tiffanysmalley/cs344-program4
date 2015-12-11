@@ -13,7 +13,8 @@
 #include <fcntl.h>     // for open
 #include <stdio.h>     // for printf
 #include <stdlib.h>    // for exit
-
+#include <sys/stat.h> 
+#include <unistd.h>
 
 #define BUFFER_SIZE    128000
 
@@ -37,7 +38,7 @@ int main(int argc, char** argv)
     }
 
     // validate port number
-    sscanf(argv[4], "%d", &port);
+    sscanf(argv[3], "%d", &port);
     if (port < 0 || port > 65535)
     {
         printf("otp_enc: invalid port\n");
@@ -97,7 +98,7 @@ int main(int argc, char** argv)
     // compare length of plaintext to that of key
     if (keyLength < plaintextLength)
     {
-        printf("Error: key '%s' is too short", argv[2]);
+        printf("Error: key '%s' is too short\n", argv[2]);
     }
 
     // connect to otp_enc_d
