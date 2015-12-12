@@ -23,13 +23,14 @@
 #include <unistd.h>
 
 #define BUFFER_SIZE    128000
-#define DEBUG          0 
+#define DEBUG          1 
 
 int main(int argc, char** argv)
 {
 
     char buffer1[BUFFER_SIZE];
     char buffer2[BUFFER_SIZE];
+    char buffer3[1];
     int fd;
     int i;
     int keyLength;
@@ -170,8 +171,10 @@ int main(int argc, char** argv)
         printf("otp_enc: plaintext sent: %d characters\n", numSent ); 
     } 
 
+    memset(buffer3, 0, 1);
+
     // get acknowledgement from server
-    numReceived = read(sockfd, buffer1, 1);
+    numReceived = read(sockfd, buffer3, 1);
     if (numReceived < 0)
     {
        printf("Error receiving acknowledgement from otp_enc_d\n");
@@ -196,12 +199,15 @@ int main(int argc, char** argv)
         printf("otp_enc: key sent: %d characters. now reading response\n", numSent); 
     } 
 
-//    do
-//    {
+    // zero out buffer
+    memset(buffer1, 0, BUFFER_SIZE);
+
+    do
+    {
         // receive ciphertext from otp_enc_d
         numReceived = read(sockfd, buffer1, plaintextLength - 1);
-//    }
-//    while (numReceived > 0);
+    }
+    while (numReceived > 0);
 
     if (numReceived < 0)
     {

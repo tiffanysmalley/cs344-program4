@@ -21,7 +21,7 @@
 #include <unistd.h>
 
 #define BUFFER_SIZE    128000
-#define DEBUG          0
+#define DEBUG          1
 
 
 int main(int argc, char** argv)
@@ -35,6 +35,7 @@ int main(int argc, char** argv)
     int i;
     int keyLength;
     int numSent;
+    int pid;
     int plaintextLength;
     int port;
     socklen_t clilen;
@@ -80,6 +81,12 @@ int main(int argc, char** argv)
         exit(2);
     }
 
+    if (DEBUG)
+    {
+        fflush(stdout);
+        printf("\notp_enc_d: bound socket on port %d\n", port);
+    }
+
     // listen for connections
     if (listen(sockfd, 5) == -1)
     {
@@ -89,107 +96,115 @@ int main(int argc, char** argv)
 
     if (DEBUG)
     {
-        fflush(stdout);
         printf("\notp_enc_d: now listening on port %d\n", port);
     }
 
     clilen = sizeof(client);
 
     // accept connections
-//    while (1)
-//    {
-//        if ((newsockfd = accept(sockfd, NULL, NULL)) == -1)
+    while (1)
+    {
         newsockfd = accept(sockfd, (struct sockaddr *) &client, &clilen);
         if (newsockfd < 0)
         {
             printf("Error: opt_enc_d unable to accept connection\n");
- //           continue;
+            continue;
             exit(2); 
         }
-//    }
 
-    // bzero(buffer,256);
+        // every time a client connects, spawn off that process
+        pid = fork();
 
-    // every time a client connects, spawn off that process
-    // grab code from smallsh
-
-    if (DEBUG)
-    {
-        printf("opt_enc_d: connection established with client\n");
-    }
-
-
-    // make sure not otp_dec_d though!!!
-
-    // receive plaintext from otp_enc
-    // ssize_t numRead = send(sockfd, buffer1, plaintextLength - 1, 0);
-    plaintextLength = read(newsockfd, buffer1, BUFFER_SIZE);
-    if (plaintextLength < 0)
-    {
-        printf("Error: otp_end_d could not read plaintext on port %d\n", port);
-        exit(2);
-    }
-
-    if (DEBUG)
-    {
-        printf("opt_enc_d: plaintext read: %d characters\n", plaintextLength);
-    }
-
-    // send acknowledgement to client
-    numSent = write(newsockfd, "!", 1);
-    if (numSent < 0)
-    {
-        printf("otp_enc_d error sending acknowledgement to client\n");
-        exit(2);
-    }
-
-    if (DEBUG)
-    {
-        printf("opt_enc_d: acknowledgement sent to client\n");
-    }
-
-    // receive key from otp_enc
-    // numSent = send(sockfd, buffer2, keyLength - 1, 0);
-    keyLength = read(newsockfd, buffer2, BUFFER_SIZE);
-    if (keyLength < 0)
-    {
-        printf("Error: otp_end_d could not read key on port %d\n", port);
-        exit(2);
-    }
-
-    // ssize_t numReceived;
-
-    if (DEBUG)
-    {
-        printf("opt_enc_d: key read: %d characters. now processing\n", keyLength);
-    }
-
-    // validate contents of plaintext
-    for (i = 0; i < plaintextLength; i++)
-    {
-        if ((int) buffer1[i] > 90 || ((int) buffer1[i] < 65 && (int) buffer1[i] != 32))
+        if (pid < 0)
         {
-            printf("otp_enc_d error: plaintext contains bad characters\n");
-            exit(1);
+            perror("opt_enc_c: error on fork\n");
         }
-    }
 
-    // // validate contents of key
-    for (i = 0; i < keyLength; i++)
-    {
-        if ((int) buffer2[i] > 90 || ((int) buffer2[i] < 65 && (int) buffer2[i] != 32))
+        // child process, do work
+        if (pid == 0)
         {
-            printf("otp_enc_d error: key contains bad characters\n");
-            exit(1);
-        }
-    }
+            // do work
 
-    // compare length of plaintext to that of key
-    if (keyLength < plaintextLength)
-    {
-        printf("otp_enc_d error: key is too short\n");
-        exit(1);
-    }
+            if (DEBUG)
+            {
+                printf("opt_enc_d: connection established with client\n");
+            }
+
+
+            // make sure not otp_dec_d though!!!
+
+            // zero out buffer
+            //    memset(buffer1, 0, BUFFER_SIZE); 
+
+            // receive plaintext from otp_enc
+    
+            plaintextLength = read(newsockfd, buffer1, BUFFER_SIZE);
+            if (plaintextLength < 0)
+            {
+                printf("Error: otp_end_d could not read plaintext on port %d\n", port);
+                exit(2);
+            }
+
+            if (DEBUG)
+            {
+                printf("opt_enc_d: plaintext read: %d characters\n", plaintextLength);
+            }
+
+            // send acknowledgement to client
+            numSent = write(newsockfd, "!", 1);
+            if (numSent < 0)
+            {
+                printf("otp_enc_d error sending acknowledgement to client\n");
+                exit(2);
+            }
+
+            if (DEBUG)
+            {
+                printf("opt_enc_d: acknowledgement sent to client\n");
+            }
+
+            // zero out buffer
+            memset(buffer2, 0, BUFFER_SIZE); 
+
+            // receive key from otp_enc
+            keyLength = read(newsockfd, buffer2, BUFFER_SIZE);
+            if (keyLength < 0)
+            {
+                printf("Error: otp_end_d could not read key on port %d\n", port);
+                exit(2);
+            }
+
+            if (DEBUG)
+            {
+                printf("opt_enc_d: key read: %d characters. now processing\n", keyLength);
+            }
+
+            // validate contents of plaintext
+            for (i = 0; i < plaintextLength; i++)
+            {
+                if ((int) buffer1[i] > 90 || ((int) buffer1[i] < 65 && (int) buffer1[i] != 32))
+                {
+                    printf("otp_enc_d error: plaintext contains bad characters\n");
+                    exit(1);
+                }
+            }
+
+            // validate contents of key
+            for (i = 0; i < keyLength; i++)
+            {
+                if ((int) buffer2[i] > 90 || ((int) buffer2[i] < 65 && (int) buffer2[i] != 32))
+                {
+                    printf("otp_enc_d error: key contains bad characters\n");
+                    exit(1);
+                }
+            }
+
+            // compare length of plaintext to that of key
+            if (keyLength < plaintextLength)
+            { 
+                printf("otp_enc_d error: key is too short\n");
+                exit(1);
+            }
 
     // processing: create ciphertext
     for (i = 0; i < plaintextLength; i++)
@@ -263,6 +278,26 @@ int main(int argc, char** argv)
     //    printf("Error: did not receive full ciphertext from otp_enc_d\n", port);
     //    exit(2);
     // }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            exit(0);
+        }
+
+        else close(newsockfd); 
+    }
 
     return 0;
 }
