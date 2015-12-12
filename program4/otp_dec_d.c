@@ -226,7 +226,12 @@ int main(int argc, char** argv)
                 key = key - 64;
 
                 // combine key and message using modular subtraction
-                int decrypted = (msg - key) % 27;
+//                int decrypted = abs((msg - key) % 27);
+                int decrypted = msg - key;
+                if (decrypted < 0) 
+                {
+                    decrypted = decrypted + 27;
+                }
 
                 // add 64 back to that range is 64 - 90
                 decrypted = decrypted + 64;
