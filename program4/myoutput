@@ -18,25 +18,30 @@ key20 exists!
 #-----------------------------------------
 #otp_enc plaintext1 key20 $encport
 #10 POINTS: Should return error about too-short key
+otp_enc_d error: key is too short
 Error: key 'key20' is too short
+THE RED GOOSE FLIES AT MIDNIGHT STOP
 
 #-----------------------------------------
 #otp_enc plaintext1 key70000 $encport
 #20 POINTS: Should return encrypted version of plaintext1
+Error: could not connect to otp_enc_d on port 51113
 
 #-----------------------------------------
 #otp_enc plaintext1 key70000 $encport > ciphertext1
 #10 POINTS: ciphertext1 must exist
-ciphertext1 DOES NOT EXIST
+ciphertext1 exists!
 
 #-----------------------------------------
 #10 POINTS: ciphertext1 must be same number of chars as source
 #wc -m plaintext1
 37 plaintext1
 #Should be same: wc -m ciphertext1
+52 ciphertext1
 
 #-----------------------------------------
 #5 POINTS: ciphertext1 should look encrypted
+Error: could not connect to otp_enc_d on port 51113
 
 #-----------------------------------------
 #otp_dec ciphertext1 key70000 $encport
@@ -63,32 +68,33 @@ plaintext1_a DOES NOT EXIST
 #20 POINTS: concurrent test of encryption - look for 4 properly-sized ciphertext# files, or 5 where the 5th is 0 bytes
 #5 POINTS: Should be only one error about plaintext5 being bad
 Ten second sleep, your program must complete in this time
-total 360
-drwxrwx---. 2 miltons upg54129  2048 Dec 11 00:05 ./
+total 408
+drwxrwx---. 2 miltons upg54129  2048 Dec 11 18:47 ./
 drwxrwx---. 4 miltons upg54129  1024 Dec 10 19:17 ../
 -rw-rw----. 1 miltons upg54129    52 Dec 10 23:58 badkey
--rw-rw----. 1 miltons upg54129     0 Dec 11 00:05 ciphertext1
--rw-rw----. 1 miltons upg54129     0 Dec 11 00:05 ciphertext2
--rw-rw----. 1 miltons upg54129     0 Dec 11 00:05 ciphertext3
--rw-rw----. 1 miltons upg54129     0 Dec 11 00:05 ciphertext4
--rw-rw----. 1 miltons upg54129  2009 Dec 11 00:05 ciphertext5
+-rw-rw----. 1 miltons upg54129    52 Dec 11 18:47 ciphertext1
+-rw-rw----. 1 miltons upg54129    52 Dec 11 18:47 ciphertext2
+-rw-rw----. 1 miltons upg54129    52 Dec 11 18:47 ciphertext3
+-rw-rw----. 1 miltons upg54129    52 Dec 11 18:47 ciphertext4
+-rw-rw----. 1 miltons upg54129    49 Dec 11 18:47 ciphertext5
 -rwxrw----. 1 miltons upg54129   193 Dec 10 19:17 compileall
--rw-rw----. 1 miltons upg54129    21 Dec 11 00:05 key20
--rw-rw----. 1 miltons upg54129 70001 Dec 11 00:05 key70000
--rwxrwx---. 1 miltons upg54129  9291 Dec 10 23:54 keygen
+-rw-rw----. 1 miltons upg54129    21 Dec 11 18:47 key20
+-rw-rw----. 1 miltons upg54129 70001 Dec 11 18:47 key70000
+-rwxrwx---. 1 miltons upg54129  9291 Dec 11 18:47 keygen
 -rw-rw----. 1 miltons upg54129  3233 Dec 10 22:12 keygen_bak.c
 -rw-rw----. 1 miltons upg54129  2309 Dec 10 23:40 keygen.c
 -rw-rw----. 1 miltons upg54129   101 Dec 10 23:55 medkey
--rw-rw----. 1 miltons upg54129  2158 Dec 11 00:05 myoutput
+-rw-rw----. 1 miltons upg54129  1025 Dec 11 16:41 mykey
+-rw-rw----. 1 miltons upg54129  2341 Dec 11 18:47 myoutput
 -rw-rw----. 1 miltons upg54129    11 Dec 10 23:46 myshortkey
--rwxrwx---. 1 miltons upg54129  7497 Dec 10 23:54 otp_dec
--rwxrw----. 1 miltons upg54129  1662 Dec 10 19:17 otp_dec.c
--rwxrwx---. 1 miltons upg54129  7507 Dec 10 23:54 otp_dec_d
--rwxrw----. 1 miltons upg54129  1664 Dec 10 19:17 otp_dec_d.c
--rwxrwx---. 1 miltons upg54129  9675 Dec 10 23:54 otp_enc
--rwxrwx---. 1 miltons upg54129  2769 Dec 10 23:54 otp_enc.c
--rwxrwx---. 1 miltons upg54129  7507 Dec 10 23:54 otp_enc_d
--rwxrw----. 1 miltons upg54129  1664 Dec 10 19:17 otp_enc_d.c
+-rwxrwx---. 1 miltons upg54129  7377 Dec 11 18:47 otp_dec
+-rwxrwx---. 1 miltons upg54129   422 Dec 11 16:32 otp_dec.c
+-rwxrwx---. 1 miltons upg54129  7387 Dec 11 18:47 otp_dec_d
+-rwxrwx---. 1 miltons upg54129   453 Dec 11 16:32 otp_dec_d.c
+-rwxrwx---. 1 miltons upg54129 12753 Dec 11 18:47 otp_enc
+-rwxrwx---. 1 miltons upg54129  5297 Dec 11 18:39 otp_enc.c
+-rwxrwx---. 1 miltons upg54129 13595 Dec 11 18:47 otp_enc_d
+-rwxrwx---. 1 miltons upg54129  6121 Dec 11 18:39 otp_enc_d.c
 -rwxrw----. 1 miltons upg54129  4948 Dec 10 19:17 p4gradingscript
 -rwxrw----. 1 miltons upg54129    37 Dec 10 19:17 plaintext1
 -rwxrw----. 1 miltons upg54129   317 Dec 10 19:17 plaintext2
@@ -99,41 +105,42 @@ drwxrwx---. 4 miltons upg54129  1024 Dec 10 19:17 ../
 #-----------------------------------------
 #15 POINTS: concurrent test of decryption - look for 4 plaintext#_a files that match the plaintext# files
 #Ten second sleep, your program must complete in this time
-total 360
-drwxrwx---. 2 miltons upg54129  2048 Dec 11 00:05 ./
+total 408
+drwxrwx---. 2 miltons upg54129  2048 Dec 11 18:47 ./
 drwxrwx---. 4 miltons upg54129  1024 Dec 10 19:17 ../
 -rw-rw----. 1 miltons upg54129    52 Dec 10 23:58 badkey
--rw-rw----. 1 miltons upg54129     0 Dec 11 00:05 ciphertext1
--rw-rw----. 1 miltons upg54129     0 Dec 11 00:05 ciphertext2
--rw-rw----. 1 miltons upg54129     0 Dec 11 00:05 ciphertext3
--rw-rw----. 1 miltons upg54129     0 Dec 11 00:05 ciphertext4
--rw-rw----. 1 miltons upg54129  2009 Dec 11 00:05 ciphertext5
+-rw-rw----. 1 miltons upg54129    52 Dec 11 18:47 ciphertext1
+-rw-rw----. 1 miltons upg54129    52 Dec 11 18:47 ciphertext2
+-rw-rw----. 1 miltons upg54129    52 Dec 11 18:47 ciphertext3
+-rw-rw----. 1 miltons upg54129    52 Dec 11 18:47 ciphertext4
+-rw-rw----. 1 miltons upg54129    49 Dec 11 18:47 ciphertext5
 -rwxrw----. 1 miltons upg54129   193 Dec 10 19:17 compileall
--rw-rw----. 1 miltons upg54129    21 Dec 11 00:05 key20
--rw-rw----. 1 miltons upg54129 70001 Dec 11 00:05 key70000
--rwxrwx---. 1 miltons upg54129  9291 Dec 10 23:54 keygen
+-rw-rw----. 1 miltons upg54129    21 Dec 11 18:47 key20
+-rw-rw----. 1 miltons upg54129 70001 Dec 11 18:47 key70000
+-rwxrwx---. 1 miltons upg54129  9291 Dec 11 18:47 keygen
 -rw-rw----. 1 miltons upg54129  3233 Dec 10 22:12 keygen_bak.c
 -rw-rw----. 1 miltons upg54129  2309 Dec 10 23:40 keygen.c
 -rw-rw----. 1 miltons upg54129   101 Dec 10 23:55 medkey
--rw-rw----. 1 miltons upg54129  4234 Dec 11 00:05 myoutput
+-rw-rw----. 1 miltons upg54129  1025 Dec 11 16:41 mykey
+-rw-rw----. 1 miltons upg54129  4473 Dec 11 18:47 myoutput
 -rw-rw----. 1 miltons upg54129    11 Dec 10 23:46 myshortkey
--rwxrwx---. 1 miltons upg54129  7497 Dec 10 23:54 otp_dec
--rwxrw----. 1 miltons upg54129  1662 Dec 10 19:17 otp_dec.c
--rwxrwx---. 1 miltons upg54129  7507 Dec 10 23:54 otp_dec_d
--rwxrw----. 1 miltons upg54129  1664 Dec 10 19:17 otp_dec_d.c
--rwxrwx---. 1 miltons upg54129  9675 Dec 10 23:54 otp_enc
--rwxrwx---. 1 miltons upg54129  2769 Dec 10 23:54 otp_enc.c
--rwxrwx---. 1 miltons upg54129  7507 Dec 10 23:54 otp_enc_d
--rwxrw----. 1 miltons upg54129  1664 Dec 10 19:17 otp_enc_d.c
+-rwxrwx---. 1 miltons upg54129  7377 Dec 11 18:47 otp_dec
+-rwxrwx---. 1 miltons upg54129   422 Dec 11 16:32 otp_dec.c
+-rwxrwx---. 1 miltons upg54129  7387 Dec 11 18:47 otp_dec_d
+-rwxrwx---. 1 miltons upg54129   453 Dec 11 16:32 otp_dec_d.c
+-rwxrwx---. 1 miltons upg54129 12753 Dec 11 18:47 otp_enc
+-rwxrwx---. 1 miltons upg54129  5297 Dec 11 18:39 otp_enc.c
+-rwxrwx---. 1 miltons upg54129 13595 Dec 11 18:47 otp_enc_d
+-rwxrwx---. 1 miltons upg54129  6121 Dec 11 18:39 otp_enc_d.c
 -rwxrw----. 1 miltons upg54129  4948 Dec 10 19:17 p4gradingscript
 -rwxrw----. 1 miltons upg54129    37 Dec 10 19:17 plaintext1
--rw-rw----. 1 miltons upg54129     0 Dec 11 00:05 plaintext1_a
+-rw-rw----. 1 miltons upg54129     0 Dec 11 18:47 plaintext1_a
 -rwxrw----. 1 miltons upg54129   317 Dec 10 19:17 plaintext2
--rw-rw----. 1 miltons upg54129     0 Dec 11 00:05 plaintext2_a
+-rw-rw----. 1 miltons upg54129     0 Dec 11 18:47 plaintext2_a
 -rwxrw----. 1 miltons upg54129    17 Dec 10 19:17 plaintext3
--rw-rw----. 1 miltons upg54129     0 Dec 11 00:05 plaintext3_a
+-rw-rw----. 1 miltons upg54129     0 Dec 11 18:47 plaintext3_a
 -rwxrw----. 1 miltons upg54129 69333 Dec 10 19:17 plaintext4
--rw-rw----. 1 miltons upg54129     0 Dec 11 00:05 plaintext4_a
+-rw-rw----. 1 miltons upg54129     0 Dec 11 18:47 plaintext4_a
 -rwxrw----. 1 miltons upg54129    42 Dec 10 19:17 plaintext5
 
 #-----------------------------------------

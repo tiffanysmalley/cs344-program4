@@ -21,6 +21,7 @@
 #include <unistd.h>
 
 #define BUFFER_SIZE    128000
+#define DEBUG          0
 
 
 int main(int argc, char** argv)
@@ -75,35 +76,48 @@ int main(int argc, char** argv)
     // bind socket to a port
     if (bind(sockfd, (struct sockaddr *) &server, sizeof(server)) < 0)
     {
-        printf("Error: opt_enc_d unable to bind socket to port %d\n", port);
+        printf("Error: otp_enc_d unable to bind socket to port %d\n", port);
         exit(2);
     }
 
     // listen for connections
     if (listen(sockfd, 5) == -1)
     {
-        printf("Error: opt_enc_d unable to listen on port %d\n", port);
+        printf("Error: otp_enc_d unable to listen on port %d\n", port);
         exit(2);
+    }
+
+    if (DEBUG)
+    {
+        fflush(stdout);
+        printf("\notp_enc_d: now listening on port %d\n", port);
     }
 
     clilen = sizeof(client);
 
     // accept connections
-    while (1)
-    {
+//    while (1)
+//    {
 //        if ((newsockfd = accept(sockfd, NULL, NULL)) == -1)
         newsockfd = accept(sockfd, (struct sockaddr *) &client, &clilen);
         if (newsockfd < 0)
         {
             printf("Error: opt_enc_d unable to accept connection\n");
-            continue;
+ //           continue;
+            exit(2); 
         }
-    }
+//    }
 
     // bzero(buffer,256);
 
     // every time a client connects, spawn off that process
     // grab code from smallsh
+
+    if (DEBUG)
+    {
+        printf("opt_enc_d: connection established with client\n");
+    }
+
 
     // make sure not otp_dec_d though!!!
 
@@ -114,6 +128,24 @@ int main(int argc, char** argv)
     {
         printf("Error: otp_end_d could not read plaintext on port %d\n", port);
         exit(2);
+    }
+
+    if (DEBUG)
+    {
+        printf("opt_enc_d: plaintext read: %d characters\n", plaintextLength);
+    }
+
+    // send acknowledgement to client
+    numSent = write(newsockfd, "!", 1);
+    if (numSent < 0)
+    {
+        printf("otp_enc_d error sending acknowledgement to client\n");
+        exit(2);
+    }
+
+    if (DEBUG)
+    {
+        printf("opt_enc_d: acknowledgement sent to client\n");
     }
 
     // receive key from otp_enc
@@ -127,6 +159,10 @@ int main(int argc, char** argv)
 
     // ssize_t numReceived;
 
+    if (DEBUG)
+    {
+        printf("opt_enc_d: key read: %d characters. now processing\n", keyLength);
+    }
 
     // validate contents of plaintext
     for (i = 0; i < plaintextLength; i++)
@@ -192,12 +228,22 @@ int main(int argc, char** argv)
         }
     }
 
+    if (DEBUG)
+    {
+        printf("opt_enc_d: sending response\n");
+    }
+
     // send ciphertext to otp_enc
     numSent = write(newsockfd, buffer3, plaintextLength);
     if (numSent < plaintextLength)
     {
         printf("otp_enc_d error writing to socket\n");
         exit(2);
+    }
+
+    if (DEBUG)
+    {
+        printf("opt_enc_d: response sent\n");
     }
 
     // close sockets
