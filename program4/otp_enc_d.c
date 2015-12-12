@@ -64,7 +64,6 @@ int main(int argc, char** argv)
     }
 
     // zero out the IP address memory space
-//    bzero((char *) &serv_addr, sizeof(serv_addr));
     memset(&server, '\0', sizeof(server));
 
 

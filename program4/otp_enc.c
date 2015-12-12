@@ -11,11 +11,13 @@
  ******************************************************************************/
 
 #include <fcntl.h>     // for open
+#include <netdb.h>
 #include <netinet/in.h>
 #include <stdio.h>     // for printf
 #include <stdlib.h>    // for exit
 #include <sys/socket.h>
 #include <sys/stat.h> 
+#include <sys/types.h>
 #include <unistd.h>
 
 #define BUFFER_SIZE    128000
@@ -29,10 +31,14 @@ int main(int argc, char** argv)
     int fd;
     int i;
     int keyLength;
+    int numReceived;
+    int numSent;
     int plaintextLength;
     int port;
+    int sockfd;
 
-    struct sockaddr_in server;
+    struct sockaddr_in serv_addr;
+    struct hostent *server;
 
     // make sure there are enough args
     if (argc < 4)
@@ -105,32 +111,35 @@ int main(int argc, char** argv)
         printf("Error: key '%s' is too short\n", argv[2]);
     }
 
-    // create socket 
+    // create socket
     int sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    if (sockfd == -1)
+    if (sockfd < 0)
     {
         printf("Error: could not contact otp_enc_d on port %d\n", port);
         exit(2);
     }
 
+    // zero out the IP address memory space
+    memset(&serv_addr, '\0', sizeof(serv_addr));
+
+//    struct sockaddr_in server;
+//    server = gethostbyname(argv[3]); // see client code example
+    serv_addr.sin_family = AF_INET;
+    serv_addr.sin_port = htons(port);
+    serv_addr.sin_addr.s_addr = inet_addr("192.168.1.1"); // is this right?
+
     // connect to otp_enc_d
-    if (connect(sockfd, (struct sockaddr *) &server, sizeof(server)) == -1)
+    if (connect(sockfd, (struct sockaddr *) &server_addr, sizeof(server_addr)) < 0)
     {
         printf("Error: could not connect to otp_enc_d on port %d\n", port);
         exit(2);
     }
 
-//    struct sockaddr_in server;
-
-    server.sin_family = AF_INET;
-    server.sin_port = htons(port);
-    server.sin_addr.s_addr = inet_addr("192.168.1.1");
-
-
     // make sure not otp_dec_d though
 
     // send plaintext to otp_enc_d
-    ssize_t numSent = send(sockfd, buffer1, plaintextLength - 1, 0);
+//    numSent = send(sockfd, buffer1, plaintextLength - 1, 0);
+    numSent = write(sockfd, buffer1, plaintextLength - 1);
     if (numSent < plaintextLength)
     {
         printf("Error: could not send plaintext to otp_enc_d on port %d\n", port);
@@ -138,25 +147,23 @@ int main(int argc, char** argv)
     }
 
     // send key to otp_enc_d
-    numSent = send(sockfd, buffer2, keyLength - 1, 0);
+    numSent = write(sockfd, buffer2, keyLength - 1);
     if (numSent < keyLength)
     {
         printf("Error: could not send key to otp_enc_d on port %d\n", port);
         exit(2);
     }
 
-    ssize_t numReceived;
-
     do
     {
         // receive ciphertext from otp_enc_d
-        numReceived = recv(sockfd, buffer1, BUFFER_SIZE, 0);
+        numReceived = read(sockfd, buffer1, plaintextLength - 1);
     }
     while (numReceived > 0);
 
-    if (numReceived < plaintextLength)
+    if (numReceived < 0)
     {
-       printf("Error: did not receive full ciphertext from otp_enc_d\n", port);
+       printf("Error receiving ciphertext from otp_enc_d\n");
        exit(2);
     }
 
@@ -168,6 +175,9 @@ int main(int argc, char** argv)
 
     // add newline to ciphertext ouput
     printf("\n");
+
+    // close socket
+    close(sockfd);
 
     return 0;
 }
