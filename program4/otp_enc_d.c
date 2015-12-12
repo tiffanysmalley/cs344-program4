@@ -130,14 +130,13 @@ int main(int argc, char** argv)
                 printf("opt_enc_d: connection established with client\n");
             }
 
-
             // make sure not otp_dec_d though!!!
 
             // zero out buffer
-            //    memset(buffer1, 0, BUFFER_SIZE); 
+            memset(buffer1, 0, BUFFER_SIZE);
 
             // receive plaintext from otp_enc
-    
+
             plaintextLength = read(newsockfd, buffer1, BUFFER_SIZE);
             if (plaintextLength < 0)
             {
@@ -164,7 +163,7 @@ int main(int argc, char** argv)
             }
 
             // zero out buffer
-            memset(buffer2, 0, BUFFER_SIZE); 
+            memset(buffer2, 0, BUFFER_SIZE);
 
             // receive key from otp_enc
             keyLength = read(newsockfd, buffer2, BUFFER_SIZE);
@@ -206,98 +205,70 @@ int main(int argc, char** argv)
                 exit(1);
             }
 
-    // processing: create ciphertext
-    for (i = 0; i < plaintextLength; i++)
-    {
-        // change spaces to asterisks
-        if (buffer1[i] == ' ')
-        {
-            buffer1[i] = '@';
-        }
-        if (buffer2[i] == ' ')
-        {
-            buffer2[i] = '@';
-        }
+            // processing: create ciphertext
+            for (i = 0; i < plaintextLength; i++)
+            {
+                // change spaces to asterisks
+                if (buffer1[i] == ' ')
+                {
+                    buffer1[i] = '@';
+                }
+                if (buffer2[i] == ' ')
+                {
+                    buffer2[i] = '@';
+                }
 
-        // type conversion to int
-        int msg = (int) buffer1[i];
-        int key = (int) buffer2[i];
+                // type conversion to int
+                int msg = (int) buffer1[i];
+                int key = (int) buffer2[i];
 
-        // subtract 64 so that range is 0 - 26 (27 characters)
-        msg = msg - 64;
-        key = key - 64;
+                // subtract 64 so that range is 0 - 26 (27 characters)
+                msg = msg - 64;
+                key = key - 64;
 
-        // combine key and message using modular addition
-        int cipher = (msg + key) % 27;
+                // combine key and message using modular addition
+                int cipher = (msg + key) % 27;
 
-        // add 64 back to that range is 64 - 90
-        cipher = cipher + 64;
+                // add 64 back to that range is 64 - 90
+                cipher = cipher + 64;
 
-        // type conversion back to char
-        buffer3[i] = (char) cipher + 0;
+                // type conversion back to char
+                buffer3[i] = (char) cipher + 0;
 
-        // after encryption, change asterisks to spaces
-        if (buffer3[i] == '@')
-        {
-            buffer3[i] = ' ';
-        }
-    }
+                // after encryption, change asterisks to spaces
+                if (buffer3[i] == '@')
+                {
+                    buffer3[i] = ' ';
+                }
+            }
 
-    if (DEBUG)
-    {
-        printf("opt_enc_d: sending response\n");
-    }
+            if (DEBUG)
+            {
+                printf("opt_enc_d: sending response\n");
+            }
 
-    // send ciphertext to otp_enc
-    numSent = write(newsockfd, buffer3, plaintextLength);
-    if (numSent < plaintextLength)
-    {
-        printf("otp_enc_d error writing to socket\n");
-        exit(2);
-    }
+            // send ciphertext to otp_enc
+            numSent = write(newsockfd, buffer3, plaintextLength);
+            if (numSent < plaintextLength)
+            {
+                printf("otp_enc_d error writing to socket\n");
+                exit(2);
+            }
 
-    if (DEBUG)
-    {
-        printf("opt_enc_d: response sent\n");
-    }
+            if (DEBUG)
+            {
+                printf("opt_enc_d: response sent\n");
+            }
 
-    // close sockets
-    close(newsockfd);
-    close(sockfd);
-
-
-    // do
-    // {
-    //     // receive ciphertext from otp_enc_d
-    //     numReceived = recv(sockfd, buffer1, BUFFER_SIZE, 0);
-    // }
-    // while (numReceived > 0);
-
-    // if (numReceived < plaintextLength)
-    // {
-    //    printf("Error: did not receive full ciphertext from otp_enc_d\n", port);
-    //    exit(2);
-    // }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+            // close sockets
+            close(newsockfd);
+            close(sockfd);
 
             exit(0);
         }
 
-        else close(newsockfd); 
-    }
+        else close(newsockfd);
+    } // end while loop
 
     return 0;
 }
