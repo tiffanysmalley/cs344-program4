@@ -109,7 +109,6 @@ int main(int argc, char** argv)
         {
             printf("Error: opt_enc_d unable to accept connection\n");
             continue;
-            exit(2); 
         }
 
         // every time a client connects, spawn off that process
@@ -127,7 +126,7 @@ int main(int argc, char** argv)
 
             if (DEBUG)
             {
-                printf("opt_enc_d: connection established with client\n");
+                printf("otp_enc_d: connection established with client\n");
             }
 
             // make sure not otp_dec_d though!!!
@@ -146,7 +145,7 @@ int main(int argc, char** argv)
 
             if (DEBUG)
             {
-                printf("opt_enc_d: plaintext read: %d characters\n", plaintextLength);
+                printf("otp_enc_d: plaintext read: %d characters\n", plaintextLength);
             }
 
             // send acknowledgement to client
@@ -159,7 +158,7 @@ int main(int argc, char** argv)
 
             if (DEBUG)
             {
-                printf("opt_enc_d: acknowledgement sent to client\n");
+                printf("otp_enc_d: acknowledgement sent to client\n");
             }
 
             // zero out buffer

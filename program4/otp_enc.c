@@ -23,7 +23,7 @@
 #include <unistd.h>
 
 #define BUFFER_SIZE    128000
-#define DEBUG          0 
+#define DEBUG          0
 
 int main(int argc, char** argv)
 {
@@ -127,8 +127,7 @@ int main(int argc, char** argv)
     // zero out the IP address memory space
     memset(&serv_addr, '\0', sizeof(serv_addr));
 
-//    struct sockaddr_in server;
-    server = gethostbyname("localhost"); // see client code example
+    server = gethostbyname("localhost");
     if (server == NULL)
     {
         printf("Error: could not connect to otp_enc_d\n");
@@ -141,7 +140,6 @@ int main(int argc, char** argv)
          server->h_length);         
 
     serv_addr.sin_port = htons(port);
-//    serv_addr.sin_addr.s_addr = inet_addr("192.168.1.1"); // is this right?
 
     // connect to otp_enc_d
     if (connect(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0)
@@ -158,7 +156,6 @@ int main(int argc, char** argv)
     } 
 
     // send plaintext to otp_enc_d
-//    numSent = send(sockfd, buffer1, plaintextLength - 1, 0);
     numSent = write(sockfd, buffer1, plaintextLength - 1);
     if (numSent < plaintextLength - 1)
     {
@@ -218,8 +215,7 @@ int main(int argc, char** argv)
     if (DEBUG)
     {
         printf("otp_enc: response received\n"); 
-    } 
-
+    }
 
     // output ciphertext to stdout
     for (i = 0; i < plaintextLength - 1; i++)
