@@ -3,7 +3,10 @@
  ** Author:      Scott Milton
  ** Date:        12/7/15
  **
- ** Description: This program 
+ ** Description: This program takes a ciphertext and a key and sends it through
+ **              a socket connection to a server program that decrypts the
+ **              message. Upon receipt of the decrypted message, this program
+ **              sends it to stdout.
  **
  ** Input:       from stdin:    type char*
  **             

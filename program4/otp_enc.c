@@ -3,7 +3,10 @@
  ** Author:      Scott Milton
  ** Date:        12/7/15
  **
- ** Description: This program 
+ ** Description: This program takes a plaintext and a key and sends it through
+ **              a socket connection to a server program that encrypts the
+ **              message. Upon receipt of the encrypted message, this program
+ **              sends it to stdout.
  **
  ** Input:       from stdin:    type char*
  **             

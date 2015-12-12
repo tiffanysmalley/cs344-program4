@@ -3,7 +3,10 @@
  ** Author:      Scott Milton
  ** Date:        12/7/15
  **
- ** Description: This program 
+ ** Description: This program decrypts a message using modular addition. It 
+ **              receives a ciphertext and a key via a socket connection. After
+ **              the decryption is complete it sends the plaintext message back
+ **              through the socket.
  **
  ** Input:       from stdin     type char*
  **              from socket    type char
@@ -135,7 +138,6 @@ int main(int argc, char** argv)
             memset(buffer1, 0, BUFFER_SIZE);
 
             // receive ciphertext from otp_dec
-
             ciphertextLength = read(newsockfd, buffer1, BUFFER_SIZE);
             if (ciphertextLength < 0)
             {
@@ -226,7 +228,6 @@ int main(int argc, char** argv)
                 key = key - 64;
 
                 // combine key and message using modular subtraction
-//                int decrypted = abs((msg - key) % 27);
                 int decrypted = msg - key;
                 if (decrypted < 0) 
                 {

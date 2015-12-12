@@ -3,7 +3,10 @@
  ** Author:      Scott Milton
  ** Date:        12/7/15
  **
- ** Description: This program 
+ ** Description: This program encrypts a message using modular addition. It 
+ **              receives a plaintext and a key via a socket connection. After
+ **              the encryption is complete it sends the ciphertext back
+ **              through the socket.
  **
  ** Input:       from stdin     type char*
  **              from socket    type char
